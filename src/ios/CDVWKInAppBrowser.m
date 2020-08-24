@@ -529,7 +529,7 @@ static CDVWKInAppBrowser* instance = nil;
         return;
     }
     
-    if(errorMessage != nil){
+    if(errorMessage != nil) {
         NSLog(errorMessage);
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR
                                                       messageAsDictionary:@{@"type":@"loaderror", @"url":[url absoluteString], @"code": @"-1", @"message": errorMessage}];
@@ -538,7 +538,12 @@ static CDVWKInAppBrowser* instance = nil;
     }
     
     //if is an app store link, let the system handle it, otherwise it fails to load it
-    if ([[ url scheme] isEqualToString:@"itms-appss"] || [[ url scheme] isEqualToString:@"itms-apps"]) {
+    if ([[ url scheme] isEqualToString:@"itms-appss"] || 
+        [[ url scheme] isEqualToString:@"itms-apps"] || 
+        [[ url scheme] isEqualToString:@"tel"] || 
+        [[ url scheme] isEqualToString:@"sms"] || 
+        [[ url scheme] isEqualToString:@"mailto"] || 
+        [[ url scheme] isEqualToString:@"geo"]) {
         [theWebView stopLoading];
         [self openInSystem:url];
         shouldStart = NO;
