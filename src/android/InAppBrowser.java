@@ -118,17 +118,24 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String FOOTER_COLOR = "footercolor";
     private static final String BEFORELOAD = "beforeload";
     private static final String FULLSCREEN = "fullscreen";
-    private static final String CUSTOM_TOOLBAR = "customtoolbar";
-    private static final String CUSTOM_TOOLBAR_TITLE = "customtoolbartitle";
+    private static final String CUSTOM_TOOLBAR = "customToolbar";
+    private static final String CUSTOM_TOOLBAR_TITLE = "customToolbarTitle";
+    private static final String CUSTOM_TOOLBAR_BACKGROUND_COLOR = "customToolbarBg";
+    private static final String CUSTOM_TOOLBAR_FOREGROUND_COLOR = "customToolbarFg";
 
     private static final List customizableOptions = Arrays.asList(
-        CLOSE_BUTTON_CAPTION,
-        TOOLBAR_COLOR,
-        NAVIGATION_COLOR,
-        CLOSE_BUTTON_COLOR,
-        FOOTER_COLOR,
-        CUSTOM_TOOLBAR_TITLE
+            CLOSE_BUTTON_CAPTION,
+            TOOLBAR_COLOR,
+            NAVIGATION_COLOR,
+            CLOSE_BUTTON_COLOR,
+            FOOTER_COLOR,
+            CUSTOM_TOOLBAR_TITLE,
+            CUSTOM_TOOLBAR_BACKGROUND_COLOR,
+            CUSTOM_TOOLBAR_FOREGROUND_COLOR
     );
+
+    private final static int DEFAULT_BACKGROUND_COLOR = android.R.color.white;
+    private final static int DEFAULT_FOREGROUND_COLOR = android.R.color.black;
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -162,6 +169,8 @@ public class InAppBrowser extends CordovaPlugin {
     private InAppBrowserClient currentClient;
     private boolean customToolbar = false;
     private String customToolbarTitle = "";
+    private int backgroundColor = DEFAULT_BACKGROUND_COLOR;
+    private int foregroundColor = DEFAULT_FOREGROUND_COLOR;
 
     /**
      * Executes the request and returns PluginResult.
@@ -651,6 +660,8 @@ public class InAppBrowser extends CordovaPlugin {
         mediaPlaybackRequiresUserGesture = false;
         customToolbar = false;
         customToolbarTitle = "";
+        backgroundColor = DEFAULT_BACKGROUND_COLOR;
+        foregroundColor = DEFAULT_FOREGROUND_COLOR;
 
         if (features != null) {
             String show = features.get(LOCATION);
@@ -738,6 +749,16 @@ public class InAppBrowser extends CordovaPlugin {
 
             String customToolbarTitleSet = features.get(CUSTOM_TOOLBAR_TITLE);
             customToolbarTitle = (customToolbarTitleSet != null) ? customToolbarTitleSet.trim() : "";
+
+            String backgroundColorSet = features.get(CUSTOM_TOOLBAR_BACKGROUND_COLOR);
+            backgroundColor = (backgroundColorSet != null)
+                    ? android.graphics.Color.parseColor(backgroundColorSet)
+                    : DEFAULT_BACKGROUND_COLOR;
+
+            String foregroundColorSet = features.get(CUSTOM_TOOLBAR_FOREGROUND_COLOR);
+            foregroundColor = (foregroundColorSet != null)
+                    ? android.graphics.Color.parseColor(foregroundColorSet)
+                    : DEFAULT_FOREGROUND_COLOR;
         }
 
         final CordovaWebView thatWebView = this.webView;
@@ -834,6 +855,8 @@ public class InAppBrowser extends CordovaPlugin {
                         cordova.getActivity(),
                         main,
                         customToolbarTitle,
+                        backgroundColor,
+                        foregroundColor,
                         new View.OnClickListener() {
                             public void onClick(View v) {
                                 closeDialog();
