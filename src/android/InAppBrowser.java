@@ -20,23 +20,20 @@ package org.apache.cordova.inappbrowser;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.os.Parcelable;
-import android.provider.Browser;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.Color;
-import android.net.http.SslError;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.Browser;
 import android.text.InputType;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -60,6 +57,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,13 +76,13 @@ import org.apache.cordova.PluginResult;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.StringTokenizer;
 
 @SuppressLint("SetJavaScriptEnabled")
@@ -120,8 +118,24 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String FOOTER_COLOR = "footercolor";
     private static final String BEFORELOAD = "beforeload";
     private static final String FULLSCREEN = "fullscreen";
+    private static final String CUSTOM_TOOLBAR = "customToolbar";
+    private static final String CUSTOM_TOOLBAR_TITLE = "customToolbarTitle";
+    private static final String CUSTOM_TOOLBAR_BACKGROUND_COLOR = "customToolbarBg";
+    private static final String CUSTOM_TOOLBAR_FOREGROUND_COLOR = "customToolbarFg";
 
-    private static final List customizableOptions = Arrays.asList(CLOSE_BUTTON_CAPTION, TOOLBAR_COLOR, NAVIGATION_COLOR, CLOSE_BUTTON_COLOR, FOOTER_COLOR);
+    private static final List customizableOptions = Arrays.asList(
+            CLOSE_BUTTON_CAPTION,
+            TOOLBAR_COLOR,
+            NAVIGATION_COLOR,
+            CLOSE_BUTTON_COLOR,
+            FOOTER_COLOR,
+            CUSTOM_TOOLBAR_TITLE,
+            CUSTOM_TOOLBAR_BACKGROUND_COLOR,
+            CUSTOM_TOOLBAR_FOREGROUND_COLOR
+    );
+
+    private final static int DEFAULT_BACKGROUND_COLOR = android.R.color.white;
+    private final static int DEFAULT_FOREGROUND_COLOR = android.R.color.black;
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
@@ -153,6 +167,10 @@ public class InAppBrowser extends CordovaPlugin {
     private boolean fullscreen = true;
     private String[] allowedSchemes;
     private InAppBrowserClient currentClient;
+    private boolean customToolbar = false;
+    private String customToolbarTitle = "";
+    private int backgroundColor = DEFAULT_BACKGROUND_COLOR;
+    private int foregroundColor = DEFAULT_FOREGROUND_COLOR;
 
     /**
      * Executes the request and returns PluginResult.
@@ -640,6 +658,10 @@ public class InAppBrowser extends CordovaPlugin {
         showZoomControls = true;
         openWindowHidden = false;
         mediaPlaybackRequiresUserGesture = false;
+        customToolbar = false;
+        customToolbarTitle = "";
+        backgroundColor = DEFAULT_BACKGROUND_COLOR;
+        foregroundColor = DEFAULT_FOREGROUND_COLOR;
 
         if (features != null) {
             String show = features.get(LOCATION);
@@ -721,6 +743,22 @@ public class InAppBrowser extends CordovaPlugin {
             if (fullscreenSet != null) {
                 fullscreen = fullscreenSet.equals("yes") ? true : false;
             }
+
+            String customToolbarSet = features.get(CUSTOM_TOOLBAR);
+            customToolbar = (customToolbarSet != null) && customToolbarSet.equalsIgnoreCase("yes");
+
+            String customToolbarTitleSet = features.get(CUSTOM_TOOLBAR_TITLE);
+            customToolbarTitle = (customToolbarTitleSet != null) ? customToolbarTitleSet.trim() : "";
+
+            String backgroundColorSet = features.get(CUSTOM_TOOLBAR_BACKGROUND_COLOR);
+            backgroundColor = (backgroundColorSet != null)
+                    ? android.graphics.Color.parseColor(backgroundColorSet)
+                    : DEFAULT_BACKGROUND_COLOR;
+
+            String foregroundColorSet = features.get(CUSTOM_TOOLBAR_FOREGROUND_COLOR);
+            foregroundColor = (foregroundColorSet != null)
+                    ? android.graphics.Color.parseColor(foregroundColorSet)
+                    : DEFAULT_FOREGROUND_COLOR;
         }
 
         final CordovaWebView thatWebView = this.webView;
@@ -810,6 +848,22 @@ public class InAppBrowser extends CordovaPlugin {
                 // Main container layout
                 LinearLayout main = new LinearLayout(cordova.getActivity());
                 main.setOrientation(LinearLayout.VERTICAL);
+
+                // Custom toolbar with back & title
+                if (customToolbar) {
+                    FrameLayout customToolbar = InAppBrowserToolbarUtil.createCustomToolbarView(
+                        cordova.getActivity(),
+                        main,
+                        customToolbarTitle,
+                        backgroundColor,
+                        foregroundColor,
+                        new View.OnClickListener() {
+                            public void onClick(View v) {
+                                closeDialog();
+                            }
+                        });
+                    main.addView(customToolbar);
+                }
 
                 // Toolbar layout
                 RelativeLayout toolbar = new RelativeLayout(cordova.getActivity());
@@ -1371,7 +1425,7 @@ public class InAppBrowser extends CordovaPlugin {
          * New (added in API 21)
          * For Android 5.0 and above.
          *
-         * @param webView
+         * @param view
          * @param request
          */
         @TargetApi(Build.VERSION_CODES.LOLLIPOP)
