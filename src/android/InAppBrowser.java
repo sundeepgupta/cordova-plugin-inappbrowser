@@ -118,10 +118,10 @@ public class InAppBrowser extends CordovaPlugin {
     private static final String FOOTER_COLOR = "footercolor";
     private static final String BEFORELOAD = "beforeload";
     private static final String FULLSCREEN = "fullscreen";
-    private static final String CUSTOM_TOOLBAR = "customToolbar";
-    private static final String CUSTOM_TOOLBAR_TITLE = "customToolbarTitle";
-    private static final String CUSTOM_TOOLBAR_BACKGROUND_COLOR = "customToolbarBg";
-    private static final String CUSTOM_TOOLBAR_FOREGROUND_COLOR = "customToolbarFg";
+    private static final String CUSTOM_TOOLBAR = "customtoolbar";
+    private static final String CUSTOM_TOOLBAR_TITLE = "customtoolbartitle";
+    private static final String CUSTOM_TOOLBAR_BACKGROUND_COLOR = "customtoolbarbg";
+    private static final String CUSTOM_TOOLBAR_FOREGROUND_COLOR = "customtoolbarfg";
 
     private static final List customizableOptions = Arrays.asList(
             CLOSE_BUTTON_CAPTION,
