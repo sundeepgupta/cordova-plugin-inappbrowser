@@ -134,8 +134,8 @@ public class InAppBrowser extends CordovaPlugin {
             CUSTOM_TOOLBAR_FOREGROUND_COLOR
     );
 
-    private final static int DEFAULT_BACKGROUND_COLOR = android.R.color.white;
-    private final static int DEFAULT_FOREGROUND_COLOR = android.R.color.black;
+    private final static int DEFAULT_BACKGROUND_COLOR = 0xffffffff;
+    private final static int DEFAULT_FOREGROUND_COLOR = 0xff000000;
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
