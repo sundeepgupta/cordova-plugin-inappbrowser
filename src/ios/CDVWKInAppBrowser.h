@@ -33,6 +33,8 @@
     NSString* _beforeload;
     BOOL _waitForBeforeload;
     WKProcessPool *_processPool;
+    CDVWKInAppBrowserViewController* _oneCartViewController;
+    UIWindow *_oneCartWindow;
 }
 
 @property (nonatomic, retain) CDVWKInAppBrowser* instance;
@@ -71,6 +73,7 @@
 @property (nonatomic, weak) CDVWKInAppBrowser* navigationDelegate;
 @property (nonatomic) NSURL* currentURL;
 
+- (void)reload;
 - (void)close;
 - (void)navigateTo:(NSURL*)url;
 - (void)showLocationBar:(BOOL)show;
