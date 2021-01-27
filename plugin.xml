@@ -94,6 +94,7 @@
         <source-file src="src/ios/CDVWKInAppBrowserImageAnimator.m" />
 
 	    <framework src="CoreGraphics.framework" />
+        <resource-file src="resources/enterprise-loader.gif" />
     </platform>
 
     <!-- osx -->
