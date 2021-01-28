@@ -20,18 +20,19 @@ const val LOADER_ENTERPRISE = "enterprise"
 
 fun loadingIndicator(
     context: Context,
-    type: String? = LOADER_NONE
+    type: String? = LOADER_DEFAULT
 ): View? {
     LOG.d(TAG, "Create loader for: $type")
     return when(type) {
         LOADER_DEFAULT -> defaultLoader(context)
         LOADER_ENTERPRISE -> enterpriseLoader(context)
+        LOADER_NONE -> null
         else -> null
     }
 }
 
 private fun defaultLoader(context: Context): View {
-    val width = 36.toPx(context)
+    val width = 32.toPx(context)
     return ProgressBar(context).apply {
         isIndeterminate = true
         indeterminateTintList = ColorStateList.valueOf(Color.LTGRAY)

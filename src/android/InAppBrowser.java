@@ -140,7 +140,7 @@ public class InAppBrowser extends CordovaPlugin {
 
     private final static int DEFAULT_BACKGROUND_COLOR = 0xffffffff;
     private final static int DEFAULT_FOREGROUND_COLOR = 0xff000000;
-    private final static String DEFAULT_LOADER = InAppBrowserViewUtil.LOADER_NONE;
+    private final static String DEFAULT_LOADER = InAppBrowserViewUtil.LOADER_DEFAULT;
 
     private InAppBrowserDialog dialog;
     private WebView inAppWebView;
